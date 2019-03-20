@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>文件数据共享页面</title>
+    <script src='/static/js/vue.js'></script>
+    <link rel="stylesheet" href="/static/css/reset.css" />
+    <link rel="stylesheet" href="/static/css/index.css" />
+</head>
+<body>
+    <div id='app' v-cloak>
+        <ul class='nav clearfix'>
+            <li class='on'><a href='/'>首页</a></li>
+            <li ><a href='/upload'>上传页面</a></li>
+        </ul>
+        <textarea id="input">这是幕后黑手</textarea>
+        <div class='list_all'>      
+            <div class='title clearfix'>
+                <span class='right' @click='svn.bl = !svn.bl'>{{svn.bl?'折叠':'展开'}}</span>
+                <h4>svn信息</h4>
+            </div>
+            <div class='list'>
+                <ul :style='{maxHeight:svn.bl?"1000px":0}'>
+                    <li v-for='(item,index) in svn.data' ::key="index">
+                        <div class='clearfix'>
+                            <span>{{item.name + ':'}}</span>
+                            <a target="_blank" :href='item.url'>{{item.url}}</a>
+                            <span class='right spanM' @click='copyFn(item.url)'>点击复制链接</span>
+                            <span class='right spanM' @click='changeSvnFn(item)'>修改信息</span>
+                            <span class='right spanM' @click='deleteSvn(index)'>删除</span>
+                        </div>
+                        <div>
+                            简介：{{item.content}}
+                        </div>
+                    </li>
+                    <li class='no_data' v-if='svn.data.length == 0'>暂无数据</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class='list_all'>      
+            <div class='title clearfix'>
+                <span class='right' @click='file_down.bl = !file_down.bl'>{{file_down.bl?'折叠':'展开'}}</span>
+                <h4>下载区域</h4>
+            </div>
+            <div class='list'>
+                <ul :style='{maxHeight:file_down.bl?"1000px":0}'>
+                    <li class='clearfix' v-for='(item,index) in file_down.data' ::key="index">
+                        <span>{{item.name + ':'}}</span>
+                        <a target="_blank" :href='item.url'>{{item.url}}</a>
+                        <span class='right' @click='copyFn(item.url)'>下载</span>
+                    </li>
+                    <li class='no_data' v-if='file_down.data.length == 0'>暂无数据</li>
+                </ul>
+            </div>
+        </div>
+        <div class='mask' v-show="changeSvnBl" @click='changeSvnBl=!changeSvnBl'>
+            <div class='svnInforUp' @click.stop=''>
+                <div>
+                    <label>名字：</label>
+                    <input type='text' v-model='changeSvn.name' />
+                </div>
+                <div>
+                    <label>链接：</label>
+                    <input type='text' v-model='changeSvn.url' />
+                </div>
+                <div>
+                    <label>说明：</label>
+                    <textarea v-model="changeSvn.content"></textarea>
+                </div>
+                <div class='submit'>
+                    <button @click='postChangeSvnFn'>提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="module">
+    import fetchApi from '/static/js/fetch.js'
+    new Vue({
+        el:'#app',
+        data:{
+            svn:{
+                bl:true,
+                data:[],
+            },
+            file_down:{
+                bl:false,
+                data:[
+
+                ]
+            },
+            changeSvn:{
+                name:'',
+                id:'',
+                content:'',
+                url:''
+            },
+            changeSvnBl:false
+        },
+        methods: {
+            copyFn(url){
+                var input = document.getElementById("input");
+                input.value = url; // 修改文本框的内容
+                input.select(); //
+                document.execCommand('copy');
+		        console.log('复制成功');
+            },
+            getSvnDate(){
+                fetchApi.getSvnDate({
+                    page:0
+                }).then((response)=>{
+                    return response.json();
+                }).then((data)=>{
+                    // if(data.code == 200){
+                        console.log(data);
+                        this.svn.data = data.data.data;
+                    // }
+                }).catch((response)=>{
+                    //console.log(response);
+                })
+            },
+            changeSvnFn(data){
+                this.changeSvnBl = true;
+                this.changeSvn = data;
+            },
+            postChangeSvnFn(){
+                fetchApi.postChangeSvnFn(this.changeSvn).then((response)=>{
+                    return response.json();
+                }).then((data)=>{
+                    // if(data.code == 200){
+                        console.log(data);
+                        alert(data.msg);
+                        this.changeSvnBl = false;
+                    // }
+                }).catch((response)=>{
+                    //console.log(response);
+                });
+            },
+            deleteSvn(index){
+                var r=confirm("确认要删除这条信息吗");
+                if(!r){return false};
+                fetchApi.deleteSvn({
+                    id:this.svn.data[index].id
+                }).then((response)=>{
+                    return response.json();
+                }).then((data)=>{
+                    // if(data.code == 200){
+                        console.log(data);
+                        alert(data.msg);
+                        this.svn.data.splice(index,1);
+                    // }
+                }).catch((response)=>{
+                    //console.log(response);
+                });
+            }   
+        },
+        mounted() {
+            this.getSvnDate();
+        },
+    })
+</script>
+</html>

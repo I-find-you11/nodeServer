@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>上传页面</title>
+    <script src='/static/js/vue.js'></script>
+    <link rel="stylesheet" href="/static/css/reset.css" />
+    <link rel="stylesheet" href="/static/css/upload.css" />
+</head>
+<body>
+    <div id='app'>
+        <ul class='nav clearfix'>
+            <li><a href='/'>首页</a></li>
+            <li class='on'><a href='/upload'>上传页面</a></li>
+        </ul>
+        <div class='svnInforUp'>
+            <div class='svnTitle'>svn信息上传</div>
+            <div>
+                <label>名字：</label>
+                <input type='text' v-model='svnInfor.name' />
+            </div>
+            <div>
+                <label>链接：</label>
+                <input type='text' v-model='svnInfor.url' />
+            </div>
+            <div>
+                <label>说明：</label>
+                <textarea v-model="svnInfor.content"></textarea>
+            </div>
+            <div class='submit'>
+                <button @click='svnPost'>提交</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="module">
+    import fetchApi from '/static/js/fetch.js'
+    new Vue({
+        el:'#app',
+        data:{
+            svnInfor:{
+                name:'',
+                url:'',
+                content:''
+            }
+        },
+        methods: {
+            svnPost(){
+                if(!this.reset(this.svnInfor)){
+                    alert('输入数据不能为空');
+                    return false;
+                }
+
+                fetchApi.svnPost(this.svnInfor).then((response)=>{
+                    return response.json();
+                }).then((data)=>{
+                    if(data.code == 200){
+                        this.emptyFn(this.svnInfor);
+                        alert('提交成功'); 
+                    }
+                }).catch((response)=>{
+                    console.log(response);
+                });
+            },
+            reset(data){
+                for(let i in data){
+                    if(!data[i]){
+                        return false;
+                    }
+                }
+                return true;
+            },
+            emptyFn(data){
+                for(let i in data){
+                    data[i] = '';
+                }
+            }
+        },
+        mounted() {
+            //this.svnPost()
+        },
+    })
+</script>
+</html>

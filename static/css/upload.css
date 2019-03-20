@@ -1,0 +1,6 @@
+.svnInforUp div label, .svnInforUp div input,.svnInforUp div textarea{
+    vertical-align: middle;
+}
+.svnInforUp .svnTitle {
+    margin-bottom: 30px;
+}

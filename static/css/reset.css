@@ -1,0 +1,73 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+a {
+    text-decoration: none;
+    color:blue;
+}
+ul,li{
+    list-style: none;
+}
+.right{
+    float: right;
+}
+.left{
+    float: left;
+}
+.clearfix::after{
+    content: '';
+    display: block;
+    clear: both;
+}
+
+#app{
+    width: 900px;
+    margin: 30px auto 0;
+}
+.nav {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content:center;
+}
+.nav li {
+    float: left;
+    margin-right: 50px;
+}
+.nav li a {
+    color: black;
+}
+.nav li.on a{
+    color:#009a61;
+}
+.svnInforUp div label {
+    margin-right: 10px;
+}
+.svnInforUp div input {
+    height: 30px;
+    padding: 5px 15px;
+    width: 270px;
+    line-height: 30px;
+}
+.svnInforUp div {
+    margin-bottom: 15px;
+}
+.svnInforUp div textarea {
+    vertical-align: top;
+    height: 70px;
+    resize:none;
+    padding: 5px 15px;
+    width: 270px;
+}
+.submit {
+    text-align: right;
+    width: 364px;
+}
+.submit button {
+    width: 80px;
+    line-height: 30px;
+    height: 30px;
+}
+[v-cloak] {
+    display: none;
+}
